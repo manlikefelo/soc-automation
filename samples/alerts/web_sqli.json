@@ -1,0 +1,15 @@
+{
+  "id": "1710000002.100480",
+  "timestamp": "2026-07-31T15:03:44.019+0300",
+  "rule": {
+    "id": "100014",
+    "level": 10,
+    "description": "Web Attack - SQL Injection pattern in HTTP request (DVWA)"
+  },
+  "agent": { "id": "005", "name": "UB01" },
+  "data": {
+    "srcip": "10.10.10.40",
+    "url": "/vulnerabilities/sqli/?id=1' UNION SELECT user,password FROM users-- -",
+    "domain": "dvwa.lab.local"
+  }
+}

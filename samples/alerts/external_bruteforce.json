@@ -1,0 +1,16 @@
+{
+  "id": "1710000003.100600",
+  "timestamp": "2026-07-31T16:41:12.882+0300",
+  "rule": {
+    "id": "5710",
+    "level": 8,
+    "description": "sshd: Multiple authentication failures from a single source"
+  },
+  "agent": { "id": "005", "name": "UB01" },
+  "data": {
+    "srcip": "185.220.101.1",
+    "srcuser": "root",
+    "hash": "44d88612fea8a8f36de82e1278abb02f"
+  },
+  "note": "Demo alert with a PUBLIC source IP + the EICAR test-file MD5, so live enrichment (AbuseIPDB/VirusTotal) returns interesting results. The IP is a well-known Tor exit range; not real intrusion data."
+}
