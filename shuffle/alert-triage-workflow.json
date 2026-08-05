@@ -1,0 +1,126 @@
+{
+  "name": "SOC Alert Triage (enrich -> score -> respond)",
+  "description": "Shuffle equivalent of the code-first soc-automation pipeline: a Wazuh alert is enriched (AbuseIPDB, VirusTotal, GeoIP), scored, and either auto-closed or escalated with a ticket + simulated containment. Mirrors the Python pipeline stage-for-stage.",
+  "start": "node_webhook",
+  "triggers": [
+    {
+      "id": "node_webhook",
+      "name": "Wazuh alert webhook",
+      "type": "WEBHOOK",
+      "comment": "Wazuh integrator POSTs the alert JSON here on any rule match.",
+      "next": "node_extract"
+    }
+  ],
+  "actions": [
+    {
+      "id": "node_extract",
+      "name": "Extract IOCs",
+      "app_name": "Shuffle Tools",
+      "action": "parse_json",
+      "comment": "Pull srcip / user / hash / domain out of the Wazuh alert.",
+      "parameters": [
+        { "name": "srcip", "value": "$exec.data.srcip" },
+        { "name": "rule_level", "value": "$exec.rule.level" },
+        { "name": "hash", "value": "$exec.data.hash" }
+      ],
+      "next": "node_abuseipdb"
+    },
+    {
+      "id": "node_abuseipdb",
+      "name": "AbuseIPDB reputation",
+      "app_name": "AbuseIPDB",
+      "action": "check_ip",
+      "comment": "Skipped automatically for private/lab IPs (no public reputation).",
+      "parameters": [
+        { "name": "apikey", "value": "$env.ABUSEIPDB_API_KEY" },
+        { "name": "ip", "value": "$node_extract.srcip" },
+        { "name": "max_age_days", "value": "90" }
+      ],
+      "next": "node_virustotal"
+    },
+    {
+      "id": "node_virustotal",
+      "name": "VirusTotal hash lookup",
+      "app_name": "VirusTotal",
+      "action": "get_file_report",
+      "parameters": [
+        { "name": "apikey", "value": "$env.VIRUSTOTAL_API_KEY" },
+        { "name": "hash", "value": "$node_extract.hash" }
+      ],
+      "next": "node_geoip"
+    },
+    {
+      "id": "node_geoip",
+      "name": "GeoIP context",
+      "app_name": "HTTP",
+      "action": "GET",
+      "parameters": [
+        { "name": "url", "value": "http://ip-api.com/json/$node_extract.srcip" }
+      ],
+      "next": "node_score"
+    },
+    {
+      "id": "node_score",
+      "name": "Risk score",
+      "app_name": "Shuffle Tools",
+      "action": "execute_python",
+      "comment": "Same model as scoring.py: base = level/15*70, +30 from the top malicious signal; level >= 12 escalates on severity.",
+      "parameters": [
+        {
+          "name": "code",
+          "value": "base=round(min(15,int(rule_level))/15*70)\nboost=30 if int(abuse_score)>=50 or int(vt_malicious)>0 else 0\nscore=min(100,base+boost)\naction='escalate' if score>=70 or int(rule_level)>=12 else ('analyst_review' if score>=40 or int(vt_malicious)>0 else 'auto_close')\nreturn {'score':score,'action':action}"
+        },
+        { "name": "rule_level", "value": "$node_extract.rule_level" },
+        { "name": "abuse_score", "value": "$node_abuseipdb.data.abuseConfidenceScore" },
+        { "name": "vt_malicious", "value": "$node_virustotal.data.attributes.last_analysis_stats.malicious" }
+      ],
+      "next": "node_branch"
+    },
+    {
+      "id": "node_branch",
+      "name": "Branch on action",
+      "app_name": "Shuffle Tools",
+      "action": "router",
+      "comment": "escalate -> ticket + containment; analyst_review -> ticket; auto_close -> log only.",
+      "conditions": [
+        { "if": "$node_score.action == escalate", "next": "node_escalate" },
+        { "if": "$node_score.action == analyst_review", "next": "node_ticket" },
+        { "if": "$node_score.action == auto_close", "next": "node_close" }
+      ]
+    },
+    {
+      "id": "node_escalate",
+      "name": "Create ticket + simulate containment",
+      "app_name": "TheHive",
+      "action": "create_alert",
+      "comment": "In a live setup this also triggers Wazuh active-response to block the IP / isolate the host. Simulated here.",
+      "parameters": [
+        { "name": "title", "value": "[ESCALATE] $exec.rule.description" },
+        { "name": "severity", "value": "3" },
+        { "name": "description", "value": "risk $node_score.score/100; SIMULATED: block $node_extract.srcip, isolate $exec.agent.name" }
+      ],
+      "next": ""
+    },
+    {
+      "id": "node_ticket",
+      "name": "Create review ticket",
+      "app_name": "TheHive",
+      "action": "create_alert",
+      "parameters": [
+        { "name": "title", "value": "[ANALYST_REVIEW] $exec.rule.description" },
+        { "name": "severity", "value": "2" }
+      ],
+      "next": ""
+    },
+    {
+      "id": "node_close",
+      "name": "Auto-close (log only)",
+      "app_name": "Shuffle Tools",
+      "action": "repeat_back_to_me",
+      "parameters": [
+        { "name": "call", "value": "auto-closed low-risk alert $exec.id (risk $node_score.score)" }
+      ],
+      "next": ""
+    }
+  ]
+}
