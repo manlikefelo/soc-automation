@@ -1,7 +1,7 @@
 # Secrets - NEVER commit real API keys
 .env
 
-# Local draft social posts - never committed
+# Local notes
 content/
 
 # Enrichment cache (may contain lookups; regenerated on demand)
