@@ -9,7 +9,7 @@ description = "Automated alert enrichment, triage scoring, and response on top o
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
-authors = [{ name = "Felix Githure", email = "githure.felix95@gmail.com" }]
+authors = [{ name = "Felix Githure", email = "felix.maina095@gmail.com" }]
 keywords = ["soar", "soc", "automation", "wazuh", "threat-intel", "triage", "security"]
 classifiers = [
     "Development Status :: 4 - Beta",

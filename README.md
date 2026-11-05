@@ -118,8 +118,6 @@ docs/                  metrics.md / shuffle-setup.md / reviewer-path.md
 - **The mocked pytest suite** — testing my own SOAR logic ([`tests/test_enrichment.py`](tests/test_enrichment.py)) is the rare, credible detail; it's the QA background applied to automation.
 - **Both approaches:** code-first Python + a Shuffle workflow ([`docs/shuffle-setup.md`](docs/shuffle-setup.md)).
 
-_Screenshots to add: `screenshots/enriched-alert.png` (raw vs enriched), `screenshots/shuffle-workflow.png`._
-
 ## How it fits the portfolio
 
 - Automates the manual triage from **[ir-threat-hunt](https://github.com/manlikefelo/ir-threat-hunt)** (P4).
