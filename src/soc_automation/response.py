@@ -61,8 +61,8 @@ def render_ticket(
 
     lines += ["", "## Enrichment"]
     for e in enrichments:
-        flag = "🔴 malicious" if e.malicious else ("⚠️ error" if e.error else "context")
-        lines.append(f"- **{e.source}** `{e.ioc}` — {e.summary} ({flag})")
+        flag = "malicious" if e.malicious else ("error" if e.error else "context")
+        lines.append(f"- **{e.source}** `{e.ioc}`: {e.summary} ({flag})")
 
     lines += ["", "## Triage reasoning"]
     lines += [f"- {r}" for r in verdict.reasons]

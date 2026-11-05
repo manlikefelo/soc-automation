@@ -1,4 +1,4 @@
-# Metrics — manual vs. automated triage
+# Metrics: manual vs. automated triage
 
 The value of this pipeline is time. Below is the enrichment + triage work an analyst
 does by hand for a single alert, versus what the pipeline does automatically.
@@ -36,14 +36,14 @@ soc-triage run alert.json --tickets tickets/
 | Repeated IOC lookups | re-done each time | cached |
 
 **Headline: enrichment + triage that took ~8 minutes by hand runs in seconds, the same
-way every time — and the analyst only sees the alerts that scored high enough to need a
+way every time, and the analyst only sees the alerts that scored high enough to need a
 human.**
 
 ## Where the time actually goes now
 
 The analyst's remaining job is the part that *should* need a human: judging the
 `analyst_review` and `escalate` tickets the pipeline surfaces, with all the enrichment
-already attached. The `auto_close` bucket — low-severity, no malicious signal — never
+already attached. The `auto_close` bucket (low-severity, no malicious signal) never
 reaches them.
 
 ## How the numbers were derived

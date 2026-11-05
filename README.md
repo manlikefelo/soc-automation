@@ -1,13 +1,13 @@
 # soc-automation
 
-**An automated alert-handling pipeline for Wazuh: enrich → score → respond. A raw alert becomes an enriched, triaged, ticketed incident in seconds — the ~8-minute manual lookup done automatically, the same way every time.**
+**An automated alert-handling pipeline for Wazuh: enrich → score → respond. A raw alert becomes an enriched, triaged, ticketed incident in seconds: the ~8-minute manual lookup done automatically, the same way every time.**
 
 ![CI](https://github.com/manlikefelo/soc-automation/actions/workflows/ci.yml/badge.svg)
 ![python](https://img.shields.io/badge/python-3.11%20|%203.12%20|%203.13-blue)
 ![coverage](docs/coverage.svg)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
-This automates, in code, the manual triage I did by hand in my [ir-threat-hunt](https://github.com/manlikefelo/ir-threat-hunt) project. When a Wazuh alert fires, the pipeline pulls out the observables, enriches them (IP reputation, file-hash reputation, GeoIP, WHOIS), scores the alert, and — for high-confidence cases — writes an incident ticket and records the containment it would take. It ships **two ways**: a transparent, unit-tested Python package *and* an equivalent [Shuffle](https://shuffler.io/) SOAR workflow, so you can see both the code-first and the platform approach.
+This automates, in code, the manual triage I did by hand in my [ir-threat-hunt](https://github.com/manlikefelo/ir-threat-hunt) project. When a Wazuh alert fires, the pipeline pulls out the observables, enriches them (IP reputation, file-hash reputation, GeoIP, WHOIS), scores the alert, and, for high-confidence cases, writes an incident ticket and records the containment it would take. It ships **two ways**: a transparent, unit-tested Python package *and* an equivalent [Shuffle](https://shuffler.io/) SOAR workflow, so you can see both the code-first and the platform approach.
 
 > **Problem:** SOC analysts burn ~8 minutes of rote lookups per alert (AbuseIPDB, VirusTotal, GeoIP, WHOIS, write-up), inconsistently, on hundreds of alerts a day.
 > **Approach:** a scored pipeline that enriches every alert automatically and only surfaces the ones a human needs to see.
@@ -82,11 +82,11 @@ score >= 70  OR  level >= 12                 -> ESCALATE       (+ ticket + simul
 otherwise                                    -> AUTO_CLOSE      (log only)
 ```
 
-A critical rule (level >= 12, e.g. DCSync) escalates on severity alone — reputation can't argue a domain-compromise signal down. See [`src/soc_automation/scoring.py`](src/soc_automation/scoring.py).
+A critical rule (level >= 12, e.g. DCSync) escalates on severity alone, reputation can't argue a domain-compromise signal down. See [`src/soc_automation/scoring.py`](src/soc_automation/scoring.py).
 
-## Testing — the QA connection
+## Testing: the QA connection
 
-Every external API is **mocked** (`responses`), so the suite is hermetic: no keys, no network. It asserts both directions — a malicious verdict when the API says so, a clean one when it doesn't — plus rate-limit / server-error handling, caching (only one real call per IOC), private-IP short-circuiting, and offline mode. **54 tests, 96% coverage**, ruff + mypy `--strict` clean, CI on Python 3.11/3.12/3.13.
+Every external API is **mocked** (`responses`), so the suite is hermetic: no keys, no network. It asserts both directions (a malicious verdict when the API says so, a clean one when it doesn't) plus rate-limit / server-error handling, caching (only one real call per IOC), private-IP short-circuiting, and offline mode. **54 tests, 96% coverage**, ruff + mypy `--strict` clean, CI on Python 3.11/3.12/3.13.
 
 ```bash
 pip install -e ".[dev]"
@@ -113,9 +113,9 @@ docs/                  metrics.md / shuffle-setup.md / reviewer-path.md
 
 ## Showcase
 
-- **A raw alert vs. the auto-enriched, scored, ticketed output** — the added context makes the value obvious. See the sample run above and a generated ticket under `tickets/`.
-- **The time-saved metric** — [`docs/metrics.md`](docs/metrics.md): ~8 min → seconds.
-- **The mocked pytest suite** — testing my own SOAR logic ([`tests/test_enrichment.py`](tests/test_enrichment.py)) is the rare, credible detail; it's the QA background applied to automation.
+- **A raw alert vs. the auto-enriched, scored, ticketed output**: the added context makes the value obvious. See the sample run above and a generated ticket under `tickets/`.
+- **The time-saved metric**: [`docs/metrics.md`](docs/metrics.md): ~8 min → seconds.
+- **The mocked pytest suite**: testing my own SOAR logic ([`tests/test_enrichment.py`](tests/test_enrichment.py)) is the rare, credible detail; it's the QA background applied to automation.
 - **Both approaches:** code-first Python + a Shuffle workflow ([`docs/shuffle-setup.md`](docs/shuffle-setup.md)).
 
 ## How it fits the portfolio

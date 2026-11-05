@@ -1,12 +1,12 @@
-# Shuffle setup — the SOAR-platform view
+# Shuffle setup: the SOAR-platform view
 
 This repo implements the triage pipeline two ways: **code-first** (the Python package,
 which is testable and transparent) and **platform** (a [Shuffle](https://shuffler.io/)
 workflow that does the equivalent on an open-source SOAR). This doc covers the Shuffle
 side. The workflow export is [`shuffle/alert-triage-workflow.json`](../shuffle/alert-triage-workflow.json).
 
-Why show both: real SOC teams live in a SOAR platform, but the logic that matters —
-how an alert is enriched and scored — should be readable and unit-tested. The Python
+Why show both: real SOC teams live in a SOAR platform, but the logic that matters.
+How an alert is enriched and scored, should be readable and unit-tested. The Python
 version is the source of truth for the scoring; the Shuffle version shows I can express
 the same flow on the tool a team actually operates.
 
@@ -68,7 +68,7 @@ at the workflow's webhook URL so alerts POST automatically:
 
 Use Shuffle's **Run** button with one of this repo's sample alerts pasted as the webhook
 body (e.g. [`samples/alerts/dcsync.json`](../samples/alerts/dcsync.json)). You should see
-the DCSync alert route to **escalate** and create a TheHive alert — matching what
+the DCSync alert route to **escalate** and create a TheHive alert, matching what
 `soc-triage run samples/alerts/dcsync.json` prints locally.
 
 ## Note on the export format
@@ -76,4 +76,4 @@ the DCSync alert route to **escalate** and create a TheHive alert — matching w
 Shuffle's internal workflow schema evolves between releases, so treat this JSON as a
 **readable, logically-complete blueprint** of the flow rather than a guaranteed drop-in
 for every Shuffle version. If a node doesn't bind on import, the app/action names above
-tell you exactly what to recreate — the structure and the scoring logic are the point.
+tell you exactly what to recreate: the structure and the scoring logic are the point.
