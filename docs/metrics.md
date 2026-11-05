@@ -35,7 +35,7 @@ soc-triage run alert.json --tickets tickets/
 | Ticket written | manually | automatically, structured |
 | Repeated IOC lookups | re-done each time | cached |
 
-**Headline: enrichment + triage that took ~8 minutes by hand runs in seconds, the same
+**Result: enrichment + triage that took ~8 minutes by hand runs in seconds, the same
 way every time, and the analyst only sees the alerts that scored high enough to need a
 human.**
 

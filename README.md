@@ -11,7 +11,7 @@ This automates, in code, the manual triage I did by hand in my [ir-threat-hunt](
 
 > **Problem:** SOC analysts burn ~8 minutes of rote lookups per alert (AbuseIPDB, VirusTotal, GeoIP, WHOIS, write-up), inconsistently, on hundreds of alerts a day.
 > **Approach:** a scored pipeline that enriches every alert automatically and only surfaces the ones a human needs to see.
-> **Result:** ~8 min → seconds, identical every time, with an auto-written ticket and simulated containment for escalations.
+> **Result:** from ~8 min to seconds, identical every time, with an auto-written ticket and simulated containment for escalations.
 
 ---
 
@@ -114,8 +114,8 @@ docs/                  metrics.md / shuffle-setup.md / reviewer-path.md
 ## Showcase
 
 - **A raw alert vs. the auto-enriched, scored, ticketed output**: the added context makes the value obvious. See the sample run above and a generated ticket under `tickets/`.
-- **The time-saved metric**: [`docs/metrics.md`](docs/metrics.md): ~8 min → seconds.
-- **The mocked pytest suite**: testing my own SOAR logic ([`tests/test_enrichment.py`](tests/test_enrichment.py)) is the rare, credible detail; it's the QA background applied to automation.
+- **The time-saved metric**: [`docs/metrics.md`](docs/metrics.md): from ~8 min to seconds.
+- **The mocked pytest suite**: testing my own SOAR logic ([`tests/test_enrichment.py`](tests/test_enrichment.py)) is part of how I apply QA to automation.
 - **Both approaches:** code-first Python + a Shuffle workflow ([`docs/shuffle-setup.md`](docs/shuffle-setup.md)).
 
 ## How it fits the portfolio
